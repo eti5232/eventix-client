@@ -68,7 +68,10 @@ export function AddToKit({ equipment, minAvailable }: AddToKitProps) {
           onClick={() => {
             kit.add(equipment, chosen)
             setQuantity(1)
-            toast.show(`${equipment.name} נוסף להזמנה`)
+            toast.show(`✓ ${equipment.name} נוסף להזמנה שלי`, 'ok', {
+              label: 'למעבר להזמנה',
+              onClick: () => kit.setDrawerOpen(true),
+            })
           }}
         >
           הוסף להזמנה

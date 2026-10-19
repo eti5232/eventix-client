@@ -9,6 +9,10 @@
 }
 
 .toast {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
   padding: var(--space-3) var(--space-4);
   border-radius: var(--radius);
   background: var(--ink);
@@ -20,4 +24,19 @@
 
 .error {
   background: var(--alert);
+}
+
+.action {
+  flex: none;
+  min-height: 36px;
+  padding: 0 var(--space-4);
+  border: 0;
+  border-radius: 999px;
+  background: var(--yellow);
+  color: var(--ink);
+  font-weight: 700;
+  cursor: pointer;
+}
+.action:hover {
+  filter: brightness(0.95);
 }

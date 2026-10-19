@@ -1,4 +1,5 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { useAuth } from '../auth/AuthContext'
 import { MAX_RANGE_DAYS, addDays, dayCount, todayIso } from '../../lib/dates'
 import type { Equipment } from '../../types'
 
@@ -57,6 +58,17 @@ export function KitProvider({ children }: { children: ReactNode }) {
   const [snapshot, setSnapshot] = useState<KitSnapshot>(load)
   const [addedTick, setAddedTick] = useState(0)
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const { user } = useAuth()
+  const wasSignedIn = useRef(user != null)
+
+  // Signing out ends the session: the next person starts with an empty order and has to pick dates again.
+  useEffect(() => {
+    if (wasSignedIn.current && user == null) {
+      setSnapshot({ start: null, end: null, items: [] })
+      setDrawerOpen(false)
+    }
+    wasSignedIn.current = user != null
+  }, [user])
 
   useEffect(() => {
     try {

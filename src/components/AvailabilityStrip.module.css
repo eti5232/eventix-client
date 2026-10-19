@@ -69,9 +69,7 @@
 .hint {
   font-size: 0.9rem;
   color: var(--ink-soft);
-  padding: var(--space-3);
-  border: 1.5px dashed var(--line-strong);
-  border-radius: var(--radius);
+  padding: var(--space-2) 0;
   text-align: center;
   display: flex;
   justify-content: center;

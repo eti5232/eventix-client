@@ -144,6 +144,16 @@ textarea {
   border-color: var(--brand-hover);
   color: #fff;
 }
+.btn-soft {
+  background: var(--brand-wash);
+  border-color: transparent;
+  color: var(--brand-deep);
+}
+.btn-soft:hover:not(:disabled) {
+  background: #e0dcfb;
+  border-color: transparent;
+  color: var(--brand-deep);
+}
 .btn-danger {
   background: var(--ink);
   border-color: var(--ink);
