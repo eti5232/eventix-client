@@ -44,3 +44,14 @@ export function useRangeAvailability(equipmentId: number, start: string | null, 
     staleTime: 15_000,
   })
 }
+
+/**
+ * What is still free after the units already in the person's own order. The server only knows about confirmed
+ * reservations, so the screen takes the order off by itself; this keeps the numbers moving as items are added.
+ */
+export function remainingAfterOrder(cells: DayAvailability[], ordered: number) {
+  const remainingCells = cells.map((c) => ({ ...c, available: c.available === undefined ? undefined : Math.max(0, c.available - ordered) }))
+  const loaded = remainingCells.length > 0 && remainingCells.every((c) => c.available !== undefined)
+  const remaining = loaded ? Math.min(...remainingCells.map((c) => c.available!)) : undefined
+  return { remainingCells, remaining }
+}

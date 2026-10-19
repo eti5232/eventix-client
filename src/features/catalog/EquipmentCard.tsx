@@ -6,7 +6,7 @@ import { formatMoney } from '../../lib/dates'
 import type { Equipment } from '../../types'
 import { useKit } from '../kit/KitContext'
 import { AddToKit } from './AddToKit'
-import { useDayAvailability } from './useAvailability'
+import { remainingAfterOrder, useDayAvailability } from './useAvailability'
 import styles from './EquipmentCard.module.css'
 
 /** One catalog item: large photo, name, daily price, day-by-day availability and the add button. */
@@ -15,6 +15,8 @@ export function EquipmentCard({ equipment }: { equipment: Equipment }) {
   const availability = useDayAvailability(equipment.id, kit.start, kit.end)
   const look = categoryLook(equipment.categoryName)
   const soldOut = availability.minAvailable === 0
+  const inOrder = kit.items.find((i) => i.equipmentId === equipment.id)?.quantity ?? 0
+  const { remainingCells, remaining } = remainingAfterOrder(availability.cells, inOrder)
 
   return (
     <article className={`${styles.card} ${soldOut ? styles.soldOut : ''}`}>
@@ -38,16 +40,16 @@ export function EquipmentCard({ equipment }: { equipment: Equipment }) {
         </p>
 
         <div className={styles.avail}>
-          <AvailabilityStrip cells={availability.cells} totalQuantity={equipment.totalQuantity} compact />
+          <AvailabilityStrip cells={remainingCells} totalQuantity={equipment.totalQuantity} compact />
           {kit.hasRange && (
             <p className={styles.summary} aria-live="polite">
-              {availability.minAvailable === undefined ? (
+              {remaining === undefined ? (
                 'בודקים זמינות…'
-              ) : availability.minAvailable === 0 ? (
-                <strong>אין יחידה פנויה בכל הטווח</strong>
+              ) : remaining === 0 ? (
+                <strong>{inOrder > 0 ? 'לקחתם את כל היחידות הפנויות' : 'אין יחידה פנויה בכל הטווח'}</strong>
               ) : (
                 <>
-                  פנויות בכל הטווח: <strong className="num">{availability.minAvailable}</strong> מתוך{' '}
+                  נשארו פנויות בכל הטווח: <strong className="num">{remaining}</strong> מתוך{' '}
                   <span className="num">{equipment.totalQuantity}</span>
                 </>
               )}

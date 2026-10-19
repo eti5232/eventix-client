@@ -8,7 +8,7 @@ import { CategoryIcon } from '../components/CategoryIcon'
 import { RangeButton } from '../components/RangeButton'
 import { ErrorBanner } from '../components/ui/ErrorBanner'
 import { AddToKit } from '../features/catalog/AddToKit'
-import { useDayAvailability } from '../features/catalog/useAvailability'
+import { remainingAfterOrder, useDayAvailability } from '../features/catalog/useAvailability'
 import { useKit } from '../features/kit/KitContext'
 import { categoryLook, categoryTone } from '../lib/categories'
 import { formatMoney, formatRange } from '../lib/dates'
@@ -39,6 +39,8 @@ export function EquipmentPage() {
   }
   const equipment = item.data!
   const look = categoryLook(equipment.categoryName)
+  const inOrder = kit.items.find((i) => i.equipmentId === id)?.quantity ?? 0
+  const { remainingCells, remaining } = remainingAfterOrder(availability.cells, inOrder)
 
   return (
     <div className="page">
@@ -72,17 +74,21 @@ export function EquipmentPage() {
               <RangeButton emphasis={!kit.hasRange} />
             </div>
 
-            <AvailabilityStrip cells={availability.cells} totalQuantity={equipment.totalQuantity} />
+            <AvailabilityStrip cells={remainingCells} totalQuantity={equipment.totalQuantity} />
 
             {kit.hasRange && (
               <p aria-live="polite">
-                {availability.minAvailable === undefined ? (
+                {remaining === undefined ? (
                   'בודקים זמינות…'
-                ) : availability.minAvailable === 0 ? (
-                  <strong>אין יחידה פנויה בכל הטווח {formatRange(kit.start!, kit.end!)}</strong>
+                ) : remaining === 0 ? (
+                  <strong>
+                    {inOrder > 0
+                      ? 'לקחתם את כל היחידות הפנויות'
+                      : `אין יחידה פנויה בכל הטווח ${formatRange(kit.start!, kit.end!)}`}
+                  </strong>
                 ) : (
                   <>
-                    פנויות בכל הטווח: <strong className="num">{availability.minAvailable}</strong> מתוך{' '}
+                    נשארו פנויות בכל הטווח: <strong className="num">{remaining}</strong> מתוך{' '}
                     <span className="num">{equipment.totalQuantity}</span>
                   </>
                 )}
