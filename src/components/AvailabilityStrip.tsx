@@ -1,4 +1,5 @@
 import type { DayAvailability } from '../features/catalog/useAvailability'
+import { RangeButton } from './RangeButton'
 import { formatDayMonth, formatLong, formatWeekday } from '../lib/dates'
 import styles from './AvailabilityStrip.module.css'
 
@@ -17,7 +18,11 @@ interface AvailabilityStripProps {
  */
 export function AvailabilityStrip({ cells, totalQuantity, compact, clashDay }: AvailabilityStripProps) {
   if (cells.length === 0) {
-    return <p className={styles.hint}>בחרו תאריכים כדי לראות מה פנוי</p>
+    return (
+      <div className={styles.hint}>
+        <RangeButton emphasis small label="בחרו תאריכים לבדיקת זמינות" />
+      </div>
+    )
   }
 
   return (
