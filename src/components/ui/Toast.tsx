@@ -28,7 +28,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const show = useCallback((text: string, kind: ToastKind = 'ok', action?: ToastAction) => {
     const id = nextId++
     setToasts((list) => [...list, { id, kind, text, action }])
-    window.setTimeout(() => dismiss(id), action ? 7000 : 4500)
+    window.setTimeout(() => dismiss(id), action ? 3500 : 2800)
   }, [dismiss])
 
   const api = useMemo(() => ({ show }), [show])
@@ -39,6 +39,13 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       <div className={styles.region} role="status" aria-live="polite">
         {toasts.map((t) => (
           <div key={t.id} className={`${styles.toast} ${t.kind === 'error' ? styles.error : ''}`}>
+            {t.kind === 'ok' && (
+              <span className={styles.check} aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12.5l4.5 4.5L19 7.5" />
+                </svg>
+              </span>
+            )}
             <span>{t.text}</span>
             {t.action && (
               <button

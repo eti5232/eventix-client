@@ -28,6 +28,65 @@ export function AddToKit({ equipment, minAvailable }: AddToKitProps) {
   else if (minAvailable === 0) reason = 'הפריט תפוס בתאריכים שנבחרו'
   else if (room === 0) reason = 'הוספתם להזמנה את כל הכמות הפנויה'
 
+  // Once the item is in the order, the counter shows (and edits) what is in the order, so it always reports the cart.
+  if (inOrder > 0 && !isAdmin) {
+    const atMax = minAvailable === undefined || inOrder >= minAvailable
+    return (
+      <div style={{ display: 'grid', gap: 'var(--space-2)' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 'var(--space-3)' }}>
+          <span
+            style={{
+              flex: '1 1 auto',
+              minHeight: 46,
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 999,
+              background: 'var(--teal-wash)',
+              color: 'var(--teal-deep)',
+              fontWeight: 800,
+            }}
+          >
+            ✓ בהזמנה שלי
+          </span>
+          <div
+            role="group"
+            aria-label={`כמות בהזמנה עבור ${equipment.name}`}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-2)' }}
+          >
+            <button
+              type="button"
+              className="btn btn-small"
+              style={{ padding: 0, width: 38 }}
+              onClick={() => (inOrder <= 1 ? kit.remove(equipment.id) : kit.setQuantity(equipment.id, inOrder - 1))}
+              aria-label={inOrder <= 1 ? 'הסרה מההזמנה' : 'הפחתת כמות'}
+            >
+              −
+            </button>
+            <span className="num" style={{ minWidth: '2ch', textAlign: 'center', fontWeight: 800 }}>
+              {inOrder}
+            </span>
+            <button
+              type="button"
+              className="btn btn-small"
+              style={{ padding: 0, width: 38 }}
+              onClick={() => kit.setQuantity(equipment.id, inOrder + 1)}
+              disabled={atMax}
+              aria-label="הגדלת כמות"
+            >
+              +
+            </button>
+          </div>
+        </div>
+        {atMax && minAvailable !== undefined && (
+          <span className="muted" style={{ fontSize: '0.85rem' }}>
+            הוספתם להזמנה את כל הכמות הפנויה
+          </span>
+        )}
+      </div>
+    )
+  }
+
   return (
     <div style={{ display: 'grid', gap: 'var(--space-2)' }}>
       <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 'var(--space-3)' }}>
@@ -68,7 +127,7 @@ export function AddToKit({ equipment, minAvailable }: AddToKitProps) {
           onClick={() => {
             kit.add(equipment, chosen)
             setQuantity(1)
-            toast.show(`✓ ${equipment.name} נוסף להזמנה שלי`, 'ok', {
+            toast.show(`${equipment.name} נוסף להזמנה שלי`, 'ok', {
               label: 'למעבר להזמנה',
               onClick: () => kit.setDrawerOpen(true),
             })
